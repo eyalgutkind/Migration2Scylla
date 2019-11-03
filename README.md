@@ -106,7 +106,7 @@ Prior to starting the migration, In the Cassandra cluster, flush and compact the
 ```
 nodetool flush
 nodetool compact
-``
+```
 Next, create a snapshot of the data with:
 ```
 nodetool snapshot dataks

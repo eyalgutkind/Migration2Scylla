@@ -43,7 +43,7 @@ Note: Non-system keyspaces don't have the same replication settings, effective o
 
 First we load sample data into the Cassandra cluster.
 Connect to the Cassandra node container using:
-`cqlsh [Cassandra node IP]
+`cqlsh [Cassandra node IP]`
 
 ```
 cqlsh:CREATE KEYSPACE dataks WITH replication = {'class': 'SimpleStrategy' , 'replication_factor' : '3'};

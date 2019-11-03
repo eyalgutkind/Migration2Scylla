@@ -3,10 +3,47 @@ Create a Cassandra, intermediate and Scylla nodes using the docker-compose.yaml 
 Start the containers by using
 `docker-compose up`
 
+After docker compose complete bringing up the 3 containers, you should be able to verify the containers are up and running with the following command:
+```
+>docker ps
+CONTAINER ID        IMAGE               COMMAND                  CREATED              STATUS              PORTS                                                                                                                   NAMES
+86b73d5bb58f        cassandra:3.11.0    "/docker-entrypoint.…"   About a minute ago   Up About a minute   7000-7001/tcp, 0.0.0.0:17199->7199/tcp, 0.0.0.0:19042->9042/tcp, 0.0.0.0:19160->9160/tcp                                cassandra-seed-node
+6217a6342cad        scylladb/scylla     "/docker-entrypoint.…"   About a minute ago   Up About a minute   22/tcp, 0.0.0.0:7199->7199/tcp, 0.0.0.0:9042->9042/tcp, 7000-7001/tcp, 9180/tcp, 10000/tcp, 0.0.0.0:9160->9160/tcp      scylla_seed
+6557f441d2f5        scylladb/scylla     "/docker-entrypoint.…"   About a minute ago   Up About a minute   22/tcp, 7000-7001/tcp, 9180/tcp, 10000/tcp, 0.0.0.0:27199->7199/tcp, 0.0.0.0:29042->9042/tcp, 0.0.0.0:29160->9160/tcp   intermediate
+```
+To connect with a shell command promot to the Cassandra contaier use the following command:
+`docker exec -it cassandra-seed-node sh`
+In a new shell tab, connect to the Scylla container in similar manner
+`docker exec -it scylla_seed sh`
+At this point you should have 2 shell tabs, one connected to the Scylla container and one to the Cassandra container. 
+Make sure the two nodes are operational, using the nodetool status command
+For Cassandra:
+```
+# nodetool status
+Datacenter: datacenter1
+=======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address       Load       Tokens       Owns (effective)  Host ID                               Rack
+UN  [CassandraIP]  270.47 KiB  256          100.0%            c3ed64d2-d164-420a-bd6d-e53fe8772084  rack1
+```
+
+For Scylla:
+```
+sh-4.2# nodetool status
+Datacenter: datacenter1
+=======================
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address       Load       Tokens       Owns    Host ID                               Rack
+UN  [ScyllaIP]  570.22 KB    256          ?       d7b18a7d-c440-4b64-8ce8-a1e7b750087e  rack1
+
+Note: Non-system keyspaces don't have the same replication settings, effective ownership information is meaningless
+```
+
 First we load sample data into the Cassandra cluster.
 Connect to the Cassandra node container using:
-`docker exec -it cassandra-seed-node sh`
-And execute : cqlsh
+`cqlsh [Cassandra node IP]
 
 ```
 cqlsh:CREATE KEYSPACE dataks WITH replication = {'class': 'SimpleStrategy' , 'replication_factor' : '3'};

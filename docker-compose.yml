@@ -1,0 +1,47 @@
+version: '3'
+
+services:
+  scylladb-node1:
+    container_name: scylla_seed
+    image: scylladb/scylla
+    networks:
+      - scylla
+    volumes:
+      - ./data/scylla/node1:/var/lib/scylla
+    command: "--seeds scylladb-node1 --smp 1 --memory 512M --disable-version-check"
+    ports:
+      - "9042:9042"   # Native transport
+      - "7199:7199"   # JMX
+      - "9160:9160"   # Thrift clients
+
+
+  cassandra-seed:
+    container_name: cassandra-seed-node
+    image: cassandra:3.11.0
+    ports:
+      - "19042:9042"   # Native transport
+      - "17199:7199"   # JMX
+      - "19160:9160"   # Thrift clients
+    networks:
+      - cassandra
+    volumes:
+      - ./data/cassandra/node1:/var/lib/cassandra
+
+
+  inermediate-node:
+    container_name: intermediate
+    image: scylladb/scylla
+    networks:
+      - scylla
+    volumes:
+      - ./data/scylla/intermediate:/var/lib/scylla
+      - ./data/cassandra/node1:/var/lib/cassandra_data
+    ports:
+      - "29042:9042"   # Native transport
+      - "27199:7199"   # JMX
+      - "29160:9160"   # Thrift clients
+
+
+networks:
+  scylla:
+  cassandra:
